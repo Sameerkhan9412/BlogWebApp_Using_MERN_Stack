@@ -8,7 +8,6 @@ export const signup=async(signupData)=>{
     const response=await apiConnector("POST",SIGNUP_API,{
         name,username,password
     });
-    response.data.success?toast.success(response.data.msg):toast.error(response.data.msg);
     return response;
 
   } catch (error) {
@@ -16,13 +15,14 @@ export const signup=async(signupData)=>{
     toast.error("signup failed");
   }
 }
-export const login=async(loginData)=>{
+export const login=async(loginData,navigate, setAuthenticated)=>{
   try {
     const {username,password}=loginData;
     const response=await apiConnector("POST",LOGIN_API,{
         username,password
     });
-    response.data.success?toast.success(response.data.msg):toast.error(response.data.msg);
+    // response.data.success?toast.success(response.data.msg):toast.error(response.data.msg);
+    // setAuthenticated(true);
     return response;
 
   } catch (error) {

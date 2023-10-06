@@ -8,9 +8,11 @@ export const SignupUser = async (request, response) => {
     try { 
         // const salt=await bcrypt.genSalt();
         const {name, username, password} = request.body;
+        if(!name||!username || !password){
+            return response.status(200).json({success:false,msg:"please fill all the required field"})
+        }
         const hashedPassword = await bcrypt.hash(password, 10);
         const existingUser = await User.findOne({username});
-        console.log(`this is exiting ${existingUser}`)
         if (existingUser) {
             return response.status(200).json({success: false, msg: "user is already exist"})
         }
@@ -25,19 +27,20 @@ export const SignupUser = async (request, response) => {
 export const loginUser = async (request, response) => {
     try { 
         const {username, password} = request.body;
-        console.log(`response form ${username}`);
-        console.log(`response form ${password}`);
+        if(!username||!password){
+            return response.status(200).json({
+                success:false,
+                msg:"please fill all the field"
+            })
+        }
         // const newUser = await User.findOne({username});
         const existingUser = await User.findOne({username});
-        console.log(`this is exiting ${existingUser}`)
-        console.log(`this is my user data ${existingUser}`);
         if(!existingUser){
             return response.status(200).json({
                 success:false,
                 msg:"Username does not exist"
             })
         }
-        // console.log(`password is this ${password} and ${existingUser.password}`);
         const match=await bcrypt.compare(password,existingUser.password);
         if(match){
            const accessToken=jwt.sign(existingUser.toJSON(),process.env.ACCESS_SECRET_KEY,{
@@ -50,7 +53,7 @@ export const loginUser = async (request, response) => {
             success:true,
             accessToken:accessToken,
             refreshToken:refreshToken,name:existingUser.name,username:existingUser.username,
-            msg:"signup successfully"
+            msg:"login successfully"
            })
         }
         else{

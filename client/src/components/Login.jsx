@@ -1,11 +1,10 @@
 import { Box, TextField, Button, styled, Typography } from "@mui/material";
-import { useState ,useContext} from "react";
-import { signup,login } from "../../services/operations/authApi";
-// import { DataContext } from "../../context/DataProvider";
-
-import bgImg from "../../assets/banner.png";
+import { useState, useContext } from "react";
+import { signup, login } from "../services/operations/authApi";
+import bgImg from "../assets/banner.png";
 import toast from "react-hot-toast";
-import { DataContext } from "../../context/DataProvider";
+import { DataContext } from "../context/DataProvider";
+import { useNavigate } from "react-router-dom";
 const Component = styled(Box)`
   width: 400px;
   margin: auto;
@@ -65,12 +64,13 @@ const loginInitialValue = {
   username: "",
   password: "",
 };
-const Login = () => {
+const Login = ({ setAuthenticated }) => {
   const [account, toggleAccount] = useState("login");
   const [signupData, setSignupData] = useState(signupInitialValue);
   const [loginData, setLoginData] = useState(loginInitialValue);
   const [error, setError] = useState("");
-  const {setAccount}=useContext(DataContext)
+  const { setAccount } = useContext(DataContext);
+  const navigate = useNavigate();
   const onChangeInput = (e) => {
     setSignupData({ ...signupData, [e.target.name]: e.target.value });
   };
@@ -79,20 +79,28 @@ const Login = () => {
   };
   const signupUser = async () => {
     const res = await signup(signupData);
-    // if (res.data.success) {
-    //   toggleAccount("login");
-    // }
-  };
-  const loginUser=async()=>{
-    const res=await login(loginData);
-    console.log(res.data)
-    if(res.data.success){
-      sessionStorage.setItem('accessToken',`Bearer ${res.data.accessToken}`)
-      sessionStorage.setItem('refreshToken',`Bearer ${res.data.refreshToken}`)
-      setAccount({username:res.data.username,name:res.data.name})
+    if (res.data.success) {
+      setSignupData(signupInitialValue);
+      toggleAccount("login");
+      toast.success("signup successfully");
+    } else {
+      toast.error(res.data.msg);
     }
-    
-  }
+  };
+  const loginUser = async () => {
+    const res = await login(loginData, setAuthenticated);
+    console.log(res);
+    if (!res.data.success) {
+      toast.error(res.data.msg);
+      return;
+    }
+    setAuthenticated(true);
+    sessionStorage.setItem("accessToken", `Bearer ${res.data.accessToken}`);
+    sessionStorage.setItem("refreshToken", `Bearer ${res.data.refreshToken}`);
+    setAccount({ username: res.data.username, name: res.data.name });
+    navigate("/home");
+    toast.success(res.data.msg)
+  };
   return (
     <Component>
       <Box>

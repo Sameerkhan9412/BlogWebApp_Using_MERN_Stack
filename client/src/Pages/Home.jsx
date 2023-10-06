@@ -1,9 +1,23 @@
-import React from 'react'
+import React from "react";
+import Banner from "../components/Banner";
+import Categories from "../components/Categories";
+import { Grid } from "@mui/material";
+import Posts from "../components/Posts"
 
 const Home = () => {
   return (
-    <div>Home from home</div>
-  )
-}
+    <>
+      <Banner />
+      <Grid container>
+        <Grid item lg={2} sm={2} xs={12}>
+          <Categories />
+        </Grid>
+        <Grid container item xs={12} sm={10} lg={10} >
+          <Posts/>
+        </Grid>
+      </Grid>
+    </>
+  );
+};
 
-export default Home
+export default Home;
