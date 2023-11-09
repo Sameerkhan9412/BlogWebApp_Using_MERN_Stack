@@ -19,7 +19,7 @@ app.use(
 app.use('/blog',router);
 app.use(bodyParser.json({extended:true}));
 app.use(bodyParser.urlencoded({extended:true}));
-const PORT=8000;
+const PORT=process.env.PORT || 8000;
 
 app.listen(PORT,console.log(`Server is running successfully at port no ${PORT}`));
 
